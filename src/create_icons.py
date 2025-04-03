@@ -1,6 +1,8 @@
 from PIL import Image, ImageDraw
 import os
 import math
+import numpy as np
+import matplotlib.pyplot as plt
 
 def create_boids_icon(size=(300, 200)):
     image = Image.new('RGB', size, '#1e1e2e')
@@ -74,6 +76,64 @@ def create_wave_icon(size=(300, 200)):
     
     return image
 
+def create_calculus_icon(size=(300, 200)):
+    # Create figure with transparent background
+    plt.figure(figsize=(10, 10))
+    ax = plt.gca()
+    ax.set_facecolor('#1e1e2e')
+    plt.gcf().set_facecolor('#1e1e2e')
+
+    # Create data for the quadratic function
+    x = np.linspace(-2, 2, 200)
+    y = 0.8 * x**2 - 0.5  # Quadratic function
+
+    # Plot main function
+    plt.plot(x, y, color='#6c5ce7', linewidth=4)
+
+    # Add tangent line at x=0.7
+    x0 = 0.7
+    y0 = 0.8 * x0**2 - 0.5
+    slope = 2 * 0.8 * x0
+    b = y0 - slope * x0
+    tangent_y = slope * x + b
+    plt.plot(x, tangent_y, '--', color='#845ef7', linewidth=3)
+
+    # Add point of tangency
+    plt.plot([x0], [y0], 'o', color='#ff6b6b', markersize=12)
+
+    # Shade area under curve from -1 to 1
+    x_integral = np.linspace(-1, 1, 100)
+    y_integral = 0.8 * x_integral**2 - 0.5
+    plt.fill_between(x_integral, y_integral, -2, alpha=0.3, color='#4c3b99')
+
+    # Set plot limits and remove axes
+    plt.xlim(-2, 2)
+    plt.ylim(-2, 2)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+
+    # Save to a temporary file and convert to PIL Image
+    temp_path = 'src/assets/temp_calculus.png'
+    plt.savefig(temp_path, 
+                bbox_inches='tight',
+                transparent=False,
+                dpi=100,
+                pad_inches=0.1)
+    plt.close()
+
+    # Load the temporary file and convert to PIL Image
+    image = Image.open(temp_path)
+    image = image.resize(size, Image.Resampling.LANCZOS)
+    
+    # Delete temporary file
+    os.remove(temp_path)
+    
+    return image
+
 def save_icon(image, name):
     if not os.path.exists('src/assets'):
         os.makedirs('src/assets')
@@ -87,7 +147,8 @@ icons = {
     'boids': create_boids_icon,
     'pendulum': create_pendulum_icon,
     'lorenz': create_lorenz_icon,
-    'wave': create_wave_icon
+    'wave': create_wave_icon,
+    'calculus': create_calculus_icon
 }
 
 for name, create_func in icons.items():

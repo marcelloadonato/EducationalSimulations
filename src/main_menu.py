@@ -255,6 +255,16 @@ class MainMenu(ctk.CTk):
             os.path.join("src", "assets", "wave_icon.png")
         ))
         
+        # Calculus Explorer Card
+        cards.append(SimulationCard(
+            self.cards_container,
+            "Calculus Explorer",
+            "Interactively explore a quadratic function, its tangent line, and the definite integral. Adjust coefficients, "
+            "the point of tangency, and integration bounds to visualize calculus concepts like derivatives and integrals.",
+            self.launch_calculus,
+            os.path.join("src", "assets", "calculus_icon.png") # TODO: Add calculus_icon.png
+        ))
+        
         return cards
     
     def show_page(self, page_number):
@@ -303,6 +313,9 @@ class MainMenu(ctk.CTk):
         
     def launch_wave(self):
         self.launch_simulation(f"{sys.executable} {os.path.join('src', 'wave-form-simulator.py')}")
+
+    def launch_calculus(self):
+        self.launch_simulation(f"{sys.executable} {os.path.join('src', 'calculus.py')}")
 
 if __name__ == "__main__":
     # Set theme
