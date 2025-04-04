@@ -101,19 +101,26 @@ class SimulationCard(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         
         # Image
-        if image_path and os.path.exists(image_path):
-            img = Image.open(image_path)
-            target_width = 320  # Fixed width for all cards
-            target_height = 200  # Fixed height for all cards
-            img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
-            self.image = ctk.CTkImage(light_image=img, dark_image=img, size=(target_width, target_height))
-            self.image_label = ctk.CTkLabel(
-                self,
-                image=self.image,
-                text="",
-                fg_color="#13131f"
-            )
-            self.image_label.grid(row=0, column=0, sticky="ew", padx=0, pady=0)
+        if image_path:
+            # Convert to absolute path
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            abs_image_path = os.path.join(script_dir, image_path)
+            
+            if os.path.exists(abs_image_path):
+                img = Image.open(abs_image_path)
+                target_width = 320  # Fixed width for all cards
+                target_height = 200  # Fixed height for all cards
+                img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
+                self.image = ctk.CTkImage(light_image=img, dark_image=img, size=(target_width, target_height))
+                self.image_label = ctk.CTkLabel(
+                    self,
+                    image=self.image,
+                    text="",
+                    fg_color="#13131f"
+                )
+                self.image_label.grid(row=0, column=0, sticky="ew", padx=0, pady=0)
+            else:
+                print(f"Warning: Image not found at {abs_image_path}")
         
         # Title
         self.title_label = ctk.CTkLabel(
@@ -219,7 +226,18 @@ class MainMenu(ctk.CTk):
             "Based on Craig Reynolds' classic model, each 'boid' follows three simple rules: separation, alignment, "
             "and cohesion. Watch as complex, lifelike flocking patterns emerge from these basic principles.",
             self.launch_boids,
-            os.path.join("src", "assets", "boids_icon.png")
+            os.path.join("assets", "boids_icon.png")
+        ))
+        
+        # Double-Slit Experiment Card
+        cards.append(SimulationCard(
+            self.cards_container,
+            "Double-Slit Experiment",
+            "Explore the fundamental principles of quantum mechanics with this interactive double-slit experiment simulation. "
+            "Watch as individual particles build up an interference pattern over time, demonstrating the wave-particle "
+            "duality of quantum mechanics. Adjust slit separation and wavelength to see how they affect the pattern.",
+            self.launch_double_slit,
+            os.path.join("assets", "double_slit_icon.png")
         ))
         
         # Double Pendulum Card
@@ -230,7 +248,7 @@ class MainMenu(ctk.CTk):
             "Watch how tiny changes in initial conditions lead to dramatically different outcomes, "
             "illustrating the famous 'butterfly effect'. Visualize the complex patterns traced by the pendulum's motion.",
             self.launch_pendulum,
-            os.path.join("src", "assets", "pendulum_icon.png")
+            os.path.join("assets", "pendulum_icon.png")
         ))
         
         # Lorenz Attractor Card
@@ -241,7 +259,7 @@ class MainMenu(ctk.CTk):
             "the famous 'butterfly effect' through a set of three coupled differential equations. Watch as the system "
             "traces out its distinctive butterfly-shaped strange attractor in three-dimensional space.",
             self.launch_lorenz,
-            os.path.join("src", "assets", "lorenz_icon.png")
+            os.path.join("assets", "lorenz_icon.png")
         ))
         
         # Wave Form Simulator Card
@@ -252,7 +270,7 @@ class MainMenu(ctk.CTk):
             "sources, adjust frequencies and amplitudes in real-time, and observe phenomena like constructive and "
             "destructive interference, standing waves, and wave superposition.",
             self.launch_wave,
-            os.path.join("src", "assets", "wave_icon.png")
+            os.path.join("assets", "wave_icon.png")
         ))
         
         # Calculus Explorer Card
@@ -262,7 +280,18 @@ class MainMenu(ctk.CTk):
             "Interactively explore a quadratic function, its tangent line, and the definite integral. Adjust coefficients, "
             "the point of tangency, and integration bounds to visualize calculus concepts like derivatives and integrals.",
             self.launch_calculus,
-            os.path.join("src", "assets", "calculus_icon.png") # TODO: Add calculus_icon.png
+            os.path.join("assets", "calculus_icon.png")
+        ))
+        
+        # Fractal Generator Card
+        cards.append(SimulationCard(
+            self.cards_container,
+            "Mandelbrot Explorer",
+            "Dive into the mesmerizing world of fractals with this interactive Mandelbrot Set explorer. "
+            "Zoom in to discover infinite complexity and self-similarity, adjust colors and iterations, "
+            "and explore one of mathematics' most beautiful and mysterious objects.",
+            self.launch_fractal,
+            os.path.join("assets", "fractal_icon.png")
         ))
         
         return cards
@@ -290,7 +319,12 @@ class MainMenu(ctk.CTk):
         # Hide the main menu
         self.withdraw()
         
-        # Run the simulation
+        # Get the correct path relative to the current script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Run the simulation with the correct path
+        command = command.replace('src/', '')  # Remove src/ prefix if present
+        command = f"{sys.executable} {os.path.join(script_dir, command)}"
         os.system(command)
         
         # Show the main menu again
@@ -303,19 +337,25 @@ class MainMenu(ctk.CTk):
         self.focus_force()
     
     def launch_boids(self):
-        self.launch_simulation(f"{sys.executable} {os.path.join('src', 'boids-simulation.py')}")
+        self.launch_simulation('boids-simulation.py')
         
     def launch_pendulum(self):
-        self.launch_simulation(f"{sys.executable} {os.path.join('src', 'double-pendulum.py')}")
+        self.launch_simulation('double-pendulum.py')
         
     def launch_lorenz(self):
-        self.launch_simulation(f"{sys.executable} {os.path.join('src', 'lorenz-attractor.py')}")
+        self.launch_simulation('lorenz-attractor.py')
         
     def launch_wave(self):
-        self.launch_simulation(f"{sys.executable} {os.path.join('src', 'wave-form-simulator.py')}")
+        self.launch_simulation('wave-form-simulator.py')
 
     def launch_calculus(self):
-        self.launch_simulation(f"{sys.executable} {os.path.join('src', 'calculus.py')}")
+        self.launch_simulation('calculus.py')
+
+    def launch_fractal(self):
+        self.launch_simulation('fractal-generator.py')
+
+    def launch_double_slit(self):
+        self.launch_simulation('double-slit.py')
 
 if __name__ == "__main__":
     # Set theme

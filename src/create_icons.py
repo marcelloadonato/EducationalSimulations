@@ -134,6 +134,109 @@ def create_calculus_icon(size=(300, 200)):
     
     return image
 
+def create_fractal_icon(size=(300, 200)):
+    # Create figure with transparent background
+    plt.figure(figsize=(10, 10))
+    ax = plt.gca()
+    ax.set_facecolor('#1e1e2e')
+    plt.gcf().set_facecolor('#1e1e2e')
+
+    # Create a simplified version of the Mandelbrot set for the icon
+    width, height = 300, 200
+    x = np.linspace(-2, 0.5, width)
+    y = np.linspace(-1, 1, height)
+    X, Y = np.meshgrid(x, y)
+    Z = X + Y*1j
+    c = Z.copy()
+    
+    # Compute a simple version of the set
+    for i in range(20):
+        mask = np.abs(Z) < 2
+        Z[mask] = Z[mask]**2 + c[mask]
+    
+    # Create the plot
+    plt.imshow(np.abs(Z) < 2, extent=(-2, 0.5, -1, 1), cmap='viridis')
+    
+    # Remove axes for cleaner look
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+
+    # Save to a temporary file and convert to PIL Image
+    temp_path = 'src/assets/temp_fractal.png'
+    plt.savefig(temp_path, 
+                bbox_inches='tight',
+                transparent=False,
+                dpi=100,
+                pad_inches=0.1)
+    plt.close()
+
+    # Load the temporary file and convert to PIL Image
+    image = Image.open(temp_path)
+    image = image.resize(size, Image.Resampling.LANCZOS)
+    
+    # Delete temporary file
+    os.remove(temp_path)
+    
+    return image
+
+def create_double_slit_icon(size=(300, 200)):
+    # Create figure with transparent background
+    plt.figure(figsize=(10, 10))
+    ax = plt.gca()
+    ax.set_facecolor('#1e1e2e')
+    plt.gcf().set_facecolor('#1e1e2e')
+
+    # Create the screen pattern
+    x = np.linspace(-2, 2, 1000)
+    k = 5  # wave number
+    d = 0.5  # slit separation
+    pattern = np.cos(k * d * x)**2  # interference pattern
+    
+    # Plot the interference pattern
+    plt.plot(x, pattern, color='#6c5ce7', linewidth=2)
+    
+    # Draw the slits
+    plt.plot([-0.25, -0.25], [0.3, 0.5], color='#845ef7', linewidth=4)
+    plt.plot([0.25, 0.25], [0.3, 0.5], color='#845ef7', linewidth=4)
+    
+    # Add some "particle" dots
+    np.random.seed(42)  # for reproducibility
+    x_dots = np.random.uniform(-2, 2, 30)
+    y_dots = np.cos(k * d * x_dots)**2 + np.random.normal(0, 0.05, 30)
+    plt.scatter(x_dots, y_dots, color='#ff6b6b', alpha=0.6, s=20)
+
+    # Set plot limits and remove axes
+    plt.xlim(-2, 2)
+    plt.ylim(-0.2, 1.2)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+
+    # Save to a temporary file and convert to PIL Image
+    temp_path = 'src/assets/temp_double_slit.png'
+    plt.savefig(temp_path, 
+                bbox_inches='tight',
+                transparent=False,
+                dpi=100,
+                pad_inches=0.1)
+    plt.close()
+
+    # Load the temporary file and convert to PIL Image
+    image = Image.open(temp_path)
+    image = image.resize(size, Image.Resampling.LANCZOS)
+    
+    # Delete temporary file
+    os.remove(temp_path)
+    
+    return image
+
 def save_icon(image, name):
     if not os.path.exists('src/assets'):
         os.makedirs('src/assets')
@@ -148,7 +251,9 @@ icons = {
     'pendulum': create_pendulum_icon,
     'lorenz': create_lorenz_icon,
     'wave': create_wave_icon,
-    'calculus': create_calculus_icon
+    'calculus': create_calculus_icon,
+    'fractal': create_fractal_icon,
+    'double_slit': create_double_slit_icon
 }
 
 for name, create_func in icons.items():
