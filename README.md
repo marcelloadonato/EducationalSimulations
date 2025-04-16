@@ -34,7 +34,7 @@ Study wave physics through an interactive wave propagation and interference simu
 
 1. Clone the repository:
 ```bash
-git clone [https://github.com/yourusername/physics-simulations.git](https://github.com/marcelloadonato/EducationalSimulations/edit/main/README.md)
+git clone [https://github.com/marcelloadonato/EducationalSimulations/]
 cd physics-simulations
 ```
 
