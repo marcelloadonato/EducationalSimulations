@@ -59,6 +59,7 @@ class PlanetaryMotionSimulator(ctk.CTk):
         self.show_trails = True
         self.show_vectors = False
         self.zoom_level = 1.0
+        self.distance_scale = 1.0
         self.pan_x = 0
         self.pan_y = 0
 
@@ -137,8 +138,24 @@ class PlanetaryMotionSimulator(ctk.CTk):
         self.time_scale_label = ctk.CTkLabel(controls_frame, text="1.0x")
         self.time_scale_label.pack()
 
+        # Distance scale
+        ctk.CTkLabel(controls_frame, text="Distance Scale").pack(pady=(10, 0))
+        self.distance_scale_slider = ctk.CTkSlider(
+            controls_frame,
+            from_=0.5,
+            to=2.0,
+            number_of_steps=30,
+            command=self.update_distance_scale,
+            width=260
+        )
+        self.distance_scale_slider.set(1.0)
+        self.distance_scale_slider.pack(pady=5)
+
+        self.distance_scale_label = ctk.CTkLabel(controls_frame, text="1.0x")
+        self.distance_scale_label.pack()
+
         # Zoom control
-        ctk.CTkLabel(controls_frame, text="Zoom").pack(pady=(10, 0))
+        ctk.CTkLabel(controls_frame, text="Zoom (View)").pack(pady=(10, 0))
         self.zoom_slider = ctk.CTkSlider(
             controls_frame,
             from_=0.1,
@@ -231,6 +248,25 @@ class PlanetaryMotionSimulator(ctk.CTk):
     def update_zoom(self, value):
         """Update zoom level"""
         self.zoom_level = float(value)
+
+    def update_distance_scale(self, value):
+        """Update distance scale and reload preset"""
+        old_scale = self.distance_scale
+        self.distance_scale = float(value)
+        self.distance_scale_label.configure(text=f"{self.distance_scale:.2f}x")
+
+        # Store the current preset by checking which preset is loaded
+        # We'll need to reload it with the new scale
+        # For now, just scale the existing bodies
+        if len(self.bodies) > 0 and old_scale != self.distance_scale:
+            scale_factor = self.distance_scale / old_scale
+            for body in self.bodies:
+                # Scale positions
+                body.position *= scale_factor
+                # Scale velocities (v ∝ 1/√r for stable orbits)
+                body.velocity /= np.sqrt(scale_factor)
+                # Clear trails since we're changing scale
+                body.clear_trail()
 
     def toggle_simulation(self):
         """Toggle simulation running state"""
@@ -489,6 +525,12 @@ class PlanetaryMotionSimulator(ctk.CTk):
                     radius=radius
                 ))
 
+        # Apply distance scale to all bodies
+        if self.distance_scale != 1.0:
+            for body in self.bodies:
+                body.position *= self.distance_scale
+                body.velocity /= np.sqrt(self.distance_scale)
+
         # Reset trails
         for body in self.bodies:
             body.clear_trail()
@@ -618,6 +660,8 @@ class PlanetaryMotionSimulator(ctk.CTk):
             view_range = max_dist * 1.5 / self.zoom_level
             self.ax.set_xlim(center[0] - view_range + self.pan_x, center[0] + view_range + self.pan_x)
             self.ax.set_ylim(center[1] - view_range + self.pan_y, center[1] + view_range + self.pan_y)
+        else:
+            view_range = 1e11
 
         # Draw trails
         if self.show_trails:
@@ -627,24 +671,28 @@ class PlanetaryMotionSimulator(ctk.CTk):
                     self.ax.plot(trail_array[:, 0], trail_array[:, 1],
                                color=body.color, alpha=0.3, linewidth=1)
 
-        # Draw bodies
+        # Draw bodies with better scaling based on view_range
         for body in self.bodies:
+            # Scale body radius based on view_range (scales with zoom)
+            visual_radius = body.radius * view_range * 0.015
+
             # Draw body as circle
-            circle = Circle(body.position, body.radius * max_dist * 0.02,
+            circle = Circle(body.position, visual_radius,
                           color=body.color, zorder=10)
             self.ax.add_patch(circle)
 
-            # Label
-            self.ax.text(body.position[0], body.position[1] + body.radius * max_dist * 0.03,
+            # Label with offset based on visual radius
+            label_offset = visual_radius * 1.8
+            self.ax.text(body.position[0], body.position[1] + label_offset,
                         body.name, color=body.color, fontsize=8, ha='center',
                         weight='bold')
 
             # Draw velocity vector
             if self.show_vectors and np.linalg.norm(body.velocity) > 0:
-                vel_scale = max_dist * 0.0001
+                vel_scale = view_range * 0.0001
                 self.ax.arrow(body.position[0], body.position[1],
                             body.velocity[0] * vel_scale, body.velocity[1] * vel_scale,
-                            head_width=max_dist * 0.03, head_length=max_dist * 0.05,
+                            head_width=view_range * 0.02, head_length=view_range * 0.03,
                             fc=body.color, ec=body.color, alpha=0.6, linewidth=2)
 
         self.ax.set_xlabel('Distance (m)', color='white', fontsize=10)
