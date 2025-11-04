@@ -261,7 +261,18 @@ class MainMenu(ctk.CTk):
             self.launch_lorenz,
             os.path.join("assets", "lorenz_icon.png")
         ))
-        
+
+        # Planetary Motion Card
+        cards.append(SimulationCard(
+            self.cards_container,
+            "Planetary Motion",
+            "Explore gravitational physics with this N-body simulator. Watch planets orbit stars, observe binary "
+            "star systems, and witness the famous figure-8 choreography. Experiment with different celestial "
+            "configurations and see how gravity shapes the cosmos. Features preset scenarios from our solar system to chaotic multi-body systems.",
+            self.launch_planetary,
+            os.path.join("assets", "planetary_icon.png")
+        ))
+
         # Wave Form Simulator Card
         cards.append(SimulationCard(
             self.cards_container,
@@ -356,6 +367,9 @@ class MainMenu(ctk.CTk):
 
     def launch_double_slit(self):
         self.launch_simulation('double-slit.py')
+
+    def launch_planetary(self):
+        self.launch_simulation('planetary-motion.py')
 
 if __name__ == "__main__":
     # Set theme

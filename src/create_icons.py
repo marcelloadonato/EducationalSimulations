@@ -195,14 +195,14 @@ def create_double_slit_icon(size=(300, 200)):
     k = 5  # wave number
     d = 0.5  # slit separation
     pattern = np.cos(k * d * x)**2  # interference pattern
-    
+
     # Plot the interference pattern
     plt.plot(x, pattern, color='#6c5ce7', linewidth=2)
-    
+
     # Draw the slits
     plt.plot([-0.25, -0.25], [0.3, 0.5], color='#845ef7', linewidth=4)
     plt.plot([0.25, 0.25], [0.3, 0.5], color='#845ef7', linewidth=4)
-    
+
     # Add some "particle" dots
     np.random.seed(42)  # for reproducibility
     x_dots = np.random.uniform(-2, 2, 30)
@@ -221,7 +221,7 @@ def create_double_slit_icon(size=(300, 200)):
 
     # Save to a temporary file and convert to PIL Image
     temp_path = 'src/assets/temp_double_slit.png'
-    plt.savefig(temp_path, 
+    plt.savefig(temp_path,
                 bbox_inches='tight',
                 transparent=False,
                 dpi=100,
@@ -231,10 +231,82 @@ def create_double_slit_icon(size=(300, 200)):
     # Load the temporary file and convert to PIL Image
     image = Image.open(temp_path)
     image = image.resize(size, Image.Resampling.LANCZOS)
-    
+
     # Delete temporary file
     os.remove(temp_path)
-    
+
+    return image
+
+def create_planetary_motion_icon(size=(300, 200)):
+    # Create figure with transparent background
+    plt.figure(figsize=(10, 10))
+    ax = plt.gca()
+    ax.set_facecolor('#1e1e2e')
+    plt.gcf().set_facecolor('#1e1e2e')
+
+    # Draw the Sun at center
+    sun = plt.Circle((0, 0), 0.3, color='#FDB813', zorder=10)
+    ax.add_patch(sun)
+
+    # Draw orbital paths for planets
+    orbits = [0.8, 1.3, 1.8, 2.3]
+    for radius in orbits:
+        circle = plt.Circle((0, 0), radius, fill=False,
+                          color='#6c5ce7', alpha=0.3, linewidth=1.5, linestyle='--')
+        ax.add_patch(circle)
+
+    # Draw planets at different positions
+    planets = [
+        (0.8, 45, '#8C7853', 0.08),   # Mercury-like
+        (1.3, 120, '#FFC649', 0.12),  # Venus-like
+        (1.8, 200, '#4A90E2', 0.13),  # Earth-like
+        (2.3, 310, '#E27B58', 0.10),  # Mars-like
+    ]
+
+    for radius, angle, color, planet_size in planets:
+        angle_rad = np.radians(angle)
+        x = radius * np.cos(angle_rad)
+        y = radius * np.sin(angle_rad)
+
+        # Draw planet
+        planet = plt.Circle((x, y), planet_size, color=color, zorder=9)
+        ax.add_patch(planet)
+
+        # Draw trail arc (partial orbit)
+        trail_angles = np.linspace(angle_rad - np.pi/3, angle_rad, 30)
+        trail_x = radius * np.cos(trail_angles)
+        trail_y = radius * np.sin(trail_angles)
+        plt.plot(trail_x, trail_y, color=color, alpha=0.5, linewidth=2)
+
+    # Set equal aspect ratio and limits
+    ax.set_aspect('equal')
+    plt.xlim(-2.8, 2.8)
+    plt.ylim(-2.8, 2.8)
+
+    # Remove axes
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+
+    # Save to a temporary file and convert to PIL Image
+    temp_path = 'src/assets/temp_planetary.png'
+    plt.savefig(temp_path,
+                bbox_inches='tight',
+                transparent=False,
+                dpi=100,
+                pad_inches=0.1)
+    plt.close()
+
+    # Load the temporary file and convert to PIL Image
+    image = Image.open(temp_path)
+    image = image.resize(size, Image.Resampling.LANCZOS)
+
+    # Delete temporary file
+    os.remove(temp_path)
+
     return image
 
 def save_icon(image, name):
@@ -253,7 +325,8 @@ icons = {
     'wave': create_wave_icon,
     'calculus': create_calculus_icon,
     'fractal': create_fractal_icon,
-    'double_slit': create_double_slit_icon
+    'double_slit': create_double_slit_icon,
+    'planetary': create_planetary_motion_icon
 }
 
 for name, create_func in icons.items():

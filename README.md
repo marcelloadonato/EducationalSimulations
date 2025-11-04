@@ -6,7 +6,7 @@ A comprehensive collection of interactive physics and mathematics simulations im
 
 ## Overview
 
-This educational platform provides seven distinct interactive simulations covering topics from classical physics to quantum mechanics, chaos theory, and mathematical visualization. Each simulation is designed to help students, educators, and enthusiasts explore fundamental scientific principles through hands-on experimentation.
+This educational platform provides eight distinct interactive simulations covering topics from classical physics to quantum mechanics, chaos theory, orbital mechanics, and mathematical visualization. Each simulation is designed to help students, educators, and enthusiasts explore fundamental scientific principles through hands-on experimentation.
 
 ## Simulations
 
@@ -76,7 +76,34 @@ This simulation brings to life the famous strange attractor discovered by meteor
 
 ---
 
-### 5. Wave Form Simulator
+### 5. Planetary Motion & N-Body Simulator
+**Experience Newton's laws and gravitational physics in action**
+
+This immersive N-body simulator brings celestial mechanics to life, demonstrating gravitational interactions between multiple celestial bodies. Watch planets orbit stars, explore binary star systems, witness the mesmerizing figure-8 orbital choreography, and experiment with complex multi-body gravitational systems.
+
+**Key Features:**
+- Real-time gravitational physics using velocity Verlet integration
+- Multiple preset scenarios:
+  - Inner Solar System (Sun, Mercury, Venus, Earth, Mars)
+  - Earth-Moon System
+  - Binary Star System with orbiting planet
+  - Triple Star System (triangular configuration)
+  - Figure-8 Orbit (famous three-body choreography)
+  - Chaotic 4-Body System
+  - Full Solar System (all 8 planets)
+- Interactive controls for time scale and zoom
+- Beautiful orbital trail visualization
+- Velocity vector display
+- Real-time energy calculations (kinetic, potential, total)
+- System information panel
+
+**Educational Value:** Demonstrates Newton's law of universal gravitation, Kepler's laws of planetary motion, orbital mechanics, the N-body problem, energy conservation, and gravitational dynamics. Essential for understanding astrophysics, space mission planning, and the computational challenges of predicting multi-body systems.
+
+**Physics Foundation:** Implements Newton's law of gravitation (F = Gm₁m₂/r²) with accurate numerical integration, showing how gravitational forces create stable orbits, resonances, and sometimes chaotic motion.
+
+---
+
+### 6. Wave Form Simulator
 **Visualize wave physics and interference phenomena**
 
 An interactive tool for studying wave propagation, superposition, and interference patterns. Create multiple wave sources and observe how waves interact, demonstrating fundamental principles of wave mechanics.
@@ -93,7 +120,7 @@ An interactive tool for studying wave propagation, superposition, and interferen
 
 ---
 
-### 6. Calculus Explorer
+### 7. Calculus Explorer
 **Interactive visualization of derivatives and integrals**
 
 A hands-on tool for exploring fundamental calculus concepts through interactive visualization of quadratic functions, their derivatives (tangent lines), and definite integrals (area under curves).
@@ -116,7 +143,7 @@ A hands-on tool for exploring fundamental calculus concepts through interactive 
 
 ---
 
-### 7. Mandelbrot Explorer (Fractal Generator)
+### 8. Mandelbrot Explorer (Fractal Generator)
 **Dive into the infinite complexity of the Mandelbrot Set**
 
 Explore one of mathematics' most beautiful and mysterious objects - the Mandelbrot Set. This interactive fractal explorer allows you to zoom into infinite self-similar patterns, revealing the stunning complexity that emerges from a simple mathematical formula: f(z) = z² + c.
@@ -206,6 +233,9 @@ python src/double-pendulum.py
 # Lorenz Attractor
 python src/lorenz-attractor.py
 
+# Planetary Motion Simulator
+python src/planetary-motion.py
+
 # Wave Form Simulator
 python src/wave-form-simulator.py
 
@@ -232,12 +262,12 @@ EducationalSimulations/
 │   ├── double-slit.py            # Quantum mechanics simulation
 │   ├── double-pendulum.py        # Chaos theory demonstration
 │   ├── lorenz-attractor.py       # Strange attractor visualization
+│   ├── planetary-motion.py       # N-body gravitational simulator
 │   ├── wave-form-simulator.py    # Wave interference simulator
 │   ├── calculus.py               # Interactive calculus explorer
 │   ├── fractal-generator.py      # Mandelbrot set explorer
 │   ├── create_icons.py           # Icon generation utility
 │   └── assets/                   # Images and icons
-│       └── icons/
 └── tests/                         # Test suite
     └── __init__.py
 ```
